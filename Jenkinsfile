@@ -10,7 +10,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                dir('backend') {
+                dir('jenkins') {
                     sh './gradlew clean build'
                 }
             }
@@ -18,7 +18,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                dir('backend') {
+                dir('jenkins') {
                     sh './gradlew test'
                 }
             }
