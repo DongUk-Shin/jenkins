@@ -4,18 +4,18 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: 'github-token',  // ← 자격 증명 ID
+                git credentialsId: 'github-token',
                     url: 'https://github.com/DongUk-Shin/jenkins.git',
                     branch: 'main'
             }
         }
 
-        stage('Build') {
+        stage('Build with Dockerfile') {
             steps {
-                dir('jenkins') {  // ← gradlew와 build.gradle이 위치한 폴더
+                dir('jenkins') {
                     sh '''
-                        chmod +x ./gradlew
-                        ./gradlew clean build
+                        echo "Docker로 빌드 환경 구성 및 빌드 실행"
+                        docker build -t myapp:build .
                     '''
                 }
             }
@@ -23,16 +23,23 @@ pipeline {
 
         stage('Test') {
             steps {
-                dir('jenkins') {
-                    sh './gradlew test'
-                }
+                echo 'Docker 빌드에서 테스트는 이미 포함되어 있습니다.'
+                // 또는 docker run으로 별도 테스트 컨테이너 실행 가능
             }
         }
 
         stage('Deploy') {
             steps {
                 echo '서버에 배포 중...'
-                // 예: scp 또는 docker-compose up -d
+
+                sh '''
+                    echo "기존 컨테이너 중지 및 삭제"
+                    docker stop myapp-container || true
+                    docker rm myapp-container || true
+
+                    echo "컨테이너 실행"
+                    docker run -d --name myapp-container -p 8080:8080 myapp:build
+                '''
             }
         }
     }
