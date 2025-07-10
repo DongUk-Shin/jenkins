@@ -1,17 +1,22 @@
 pipeline {
-    agent any  // 모든 Jenkins 노드에서 실행
+    agent any
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/DongUk-Shin/jenkins.git'
+                git credentialsId: 'github-token',  // ← 자격 증명 ID
+                    url: 'https://github.com/DongUk-Shin/jenkins.git',
+                    branch: 'main'
             }
         }
 
         stage('Build') {
             steps {
-                dir('jenkins') {
-                    sh './gradlew clean build'
+                dir('jenkins') {  // ← gradlew와 build.gradle이 위치한 폴더
+                    sh '''
+                        chmod +x ./gradlew
+                        ./gradlew clean build
+                    '''
                 }
             }
         }
