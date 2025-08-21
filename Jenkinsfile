@@ -15,7 +15,7 @@ pipeline {
                 dir('jenkins') {
                     sh '''
                         echo "Docker로 빌드 환경 구성 및 빌드 실행"
-                        docker build -t myapp:build .
+                        sudo docker build -t myapp:build .
                     '''
                 }
             }
@@ -34,11 +34,11 @@ pipeline {
 
                 sh '''
                     echo "기존 컨테이너 중지 및 삭제"
-                    docker stop myapp-container || true
-                    docker rm myapp-container || true
+                    sudo docker stop myapp-container || true
+                    sudo docker rm myapp-container || true
 
                     echo "컨테이너 실행"
-                    docker run -d --name myapp-container -p 8080:8080 myapp:build
+                    sudo docker run -d --name myapp-container -p 9000:8080 myapp:build
                 '''
             }
         }
